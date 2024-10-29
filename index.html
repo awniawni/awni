@@ -18,7 +18,7 @@
             align-items: center;
             margin: 0;
             padding: 20px;
-            font-family: Arial, sans-serif;
+            font-family: 'Courier New', Courier, monospace; /* Set to Courier New font */
         }
 
         /* Title styling */
@@ -36,10 +36,16 @@
             text-align: center; /* Center align the text */
         }
 
+        /* Button container styling */
+        .button-container {
+            display: flex; /* Align buttons in a row */
+            gap: 10px; /* Space between buttons */
+            margin-bottom: 20px; /* Space below button container */
+        }
+
         /* Button styling */
         .filter-button {
             padding: 10px 20px;
-            margin-bottom: 20px;
             background-color: white; /* White background */
             color: black; /* Black text color */
             border: 1px solid black; /* Black border */
@@ -77,8 +83,10 @@
     <h1>awni?</h1>
     <p>iawn? hwn yn handi i ffeindio gigs sy 'mlaen. croeso x</p> <!-- Added body text -->
     
-    <button class="filter-button" id="showEventsButton" onclick="filterEvents()">Dangos gigs wsos yma</button> <!-- Filter button -->
-    <button class="filter-button" id="clearFilterButton" onclick="clearFilters()">Clirio filter</button> <!-- Clear filter button -->
+    <div class="button-container">
+        <button class="filter-button" id="showEventsButton" onclick="filterEvents()">Dangos gigs wsos yma</button> <!-- Filter button -->
+        <button class="filter-button" id="clearFilterButton" onclick="clearFilters()">X Clirio filter</button> <!-- Clear filter button -->
+    </div>
 
     <div id="map"></div>
 
@@ -147,53 +155,4 @@
                 lat: 53.1110, // Latitude for the Pant Du event
                 lon: -4.2035, // Longitude for the Pant Du event
                 link: "https://docs.google.com/forms/d/e/1FAIpQLSeheCzdLXcd3xECGnQz3Tw6lyuu35aoiZjoNxBWXhbCovtJdw/viewform?fbclid=IwY2xjawGNte5leHRuA2FlbQIxMAABHWfClD0O1sTYj03xsXMVQ8X1dmVzie0TS2i5MuV2lzGxAImpw8QNKNHTMQ_aem_1lTJqeuGvMVpllBHgGpfZA",
-                image: "https://scontent.flhr14-1.fna.fbcdn.net/v/t39.30808-6/464846197_861125512846927_7885170099175806461_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=75d36f&_nc_ohc=SlkX254PKJQQ7kNvgGsdYzX&_nc_zt=23&_nc_ht=scontent.flhr14-1.fna&_nc_gid=AcoPPz4ZKD0QBOsC9RAun75&oh=00_AYAd1EbMY1TBZ7Pw5t1RzfmyYFXr1i2XepBMgjTXKQmLbA&oe=6726AA65" // Image for the popup
-            }
-        ];
-
-        // Function to display events on the map
-        function displayEvents(eventArray) {
-            // Clear existing markers
-            map.eachLayer(layer => {
-                if (layer instanceof L.Marker) {
-                    map.removeLayer(layer);
-                }
-            });
-
-            // Loop through events and add markers
-            eventArray.forEach(event => {
-                const icon = event.title === "Rio 18" ? rioIcon : 
-                             event.title === "Soap" ? soapIcon : pantDuIcon; // Choose the appropriate icon for Pant Du
-                const marker = L.marker([event.lat, event.lon], { icon }).addTo(map);
-                marker.bindPopup(
-                    `<strong>${event.title}</strong><br>` +
-                    `<img src='${event.image}' class='popup-image' alt='Event Image'><br>` + 
-                    `📍 ${event.location}<br>` +
-                    `📅 ${event.date}<br>` +
-                    `🕓 ${event.time}<br>` +
-                    `🎟️ ${event.cost}<br>` +
-                    `🖇️ <a href='${event.link}' target='_blank'>linc</a>` // Changed display name for the link
-                );
-            });
-        }
-
-        // Function to filter events for this week
-        function filterEvents() {
-            const thisWeeksEvents = events.filter(event => event.date.includes("08.11.24"));
-            displayEvents(thisWeeksEvents);
-            // Change the appearance of the button to indicate selection
-            document.getElementById("showEventsButton").classList.add("selected");
-        }
-
-        // Function to clear filters and show all events
-        function clearFilters() {
-            displayEvents(events); // Display all events
-            document.getElementById("showEventsButton").classList.remove("selected"); // Reset button appearance
-        }
-
-        // Display all events on initial load
-        displayEvents(events);
-    </script>
-
-</body>
-</html>
+                image: "https://scontent.flhr14-1.fna.fbcdn.net/v/t39.30808-6/464846197_861125512846927_7885170099175806461_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=75d36f&_nc_ohc=SlkX254PKJQQ7kNvgGsdYzX&_nc_zt=23&_nc_ht=scontent.flhr14-1.fna&_nc_gid=AcoPP
