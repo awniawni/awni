@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="cy">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>awni?</title>
+    
+    <!-- Leaflet CSS and JS for interactive map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        /* Basic styling for the page */
+        body {
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Title styling */
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px; /* Reduced margin to bring text closer */
+            color: black; /* Change title color to black */
+        }
+
+        /* Body text styling */
+        p {
+            font-size: 1.2rem; /* Set font size for body text */
+            color: black; /* Text color for body */
+            margin-bottom: 20px; /* Margin below the paragraph */
+            text-align: center; /* Center align the text */
+        }
+
+        /* Button styling */
+        .filter-button {
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            background-color: white; /* White background */
+            color: black; /* Black text color */
+            border: 1px solid black; /* Black border */
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer;
+        }
+
+        .filter-button.selected {
+            background-color: lightgray; /* Gray background when selected */
+        }
+
+        /* Container for the map */
+        #map {
+            width: 95%;
+            max-width: 1200px;
+            height: 75vh;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border: 1px solid #ccc;
+        }
+
+        /* Popup text color */
+        .leaflet-popup-content {
+            color: black; /* Change popup text color to black */
+        }
+
+        /* Image styling */
+        .popup-image {
+            width: 100%; /* Adjust the image size */
+            height: auto; /* Maintain aspect ratio */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>awni?</h1>
+    <p>iawn? hwn yn handi i ffeindio gigs sy 'mlaen. croeso x</p> <!-- Added body text -->
+    
+    <button class="filter-button" id="showEventsButton" onclick="filterEvents()">Dangos gigs wsos yma</button> <!-- Filter button -->
+    <button class="filter-button" id="clearFilterButton" onclick="clearFilters()">Clirio filter</button> <!-- Clear filter button -->
+
+    <div id="map"></div>
+
+    <script>
+        // Create the map and set initial coordinates and zoom level
+        const map = L.map('map').setView([53.1803054, -4.0632648], 10); // Centered on a common point
+
+        // Use OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Define custom marker icons
+        const rioIcon = L.icon({
+            iconUrl: 'rio18.png', // Marker icon for Rio 18
+            iconSize: [120, 160], // Size of the marker
+            iconAnchor: [60, 160], // Center the icon correctly
+            popupAnchor: [1, -34] // Point from which the popup should open relative to the iconAnchor
+        });
+
+        const soapIcon = L.icon({
+            iconUrl: 'soap(1).png', // Marker icon for Soap
+            iconSize: [120, 160], // Size of the marker
+            iconAnchor: [60, 160], // Center the icon correctly
+            popupAnchor: [1, -34] // Point from which the popup should open relative to the iconAnchor
+        });
+
+        const pantDuIcon = L.icon({
+            iconUrl: 'pantdu.png', // Marker icon for Pant Du
+            iconSize: [120, 160], // Size of the marker
+            iconAnchor: [60, 160], // Center the icon correctly
+            popupAnchor: [1, -34] // Point from which the popup should open relative to the iconAnchor
+        });
+
+        // Array of events
+        const events = [
+            {
+                title: "Rio 18",
+                location: "Neuadd Ogwen, Bethesda",
+                date: "Nos Wener | 08.11.24", // Updated date format
+                time: "7:30",
+                cost: "£14",
+                lat: 53.1803054,
+                lon: -4.0632648,
+                link: "https://neuaddogwen.com/en/events/rio-18/?fbclid=IwY2xjawGNqPlleHRuA2FlbQIxMQABHUaxU6iMgunZBfRlEltPJqXsBFWbAKkQA3__cGgLTIijA2LroZp6Pb-HCA_aem_8TrtdY9Ql5B24RmF2r2cLw",
+                image: "https://neuaddogwen.com/wp-content/uploads/2024/09/2CAR_2446-2-768x572.jpg" // Image for the popup
+            },
+            {
+                title: "Soap",
+                location: "Tafarn y Fic, Y Felinheli",
+                date: "Nos Wener | 08.11.24", // Updated date format
+                time: "9:00 PM",
+                cost: "£12",
+                lat: 53.1838362, // Updated Latitude for the Soap event
+                lon: -4.210217, // Updated Longitude for the Soap event
+                link: "https://neuaddogwen.com/en/events/rio-18/?fbclid=IwY2xjawGNqPlleHRuA2FlbQIxMQABHUaxU6iMgunZBfRlEltPJqXsBFWbAKkQA3__cGgLTIijA2LroZp6Pb-HCA_aem_8TrtdY9Ql5B24RmF2r2cLw", // Link remains the same as Rio 18 for example
+                image: "soap.png" // Image for the popup
+            },
+            {
+                title: "Gethin Fôn a Glesni Fflur",
+                location: "Pant Du, Penygroes",
+                date: "Nos Wener | 22.11.24", // Updated date format
+                time: "7:00 PM",
+                cost: "£20 yn cynnwys blasu 6 o winoedd gwahanol, caws ac adloniant.",
+                lat: 53.1110, // Latitude for the Pant Du event
+                lon: -4.2035, // Longitude for the Pant Du event
+                link: "https://docs.google.com/forms/d/e/1FAIpQLSeheCzdLXcd3xECGnQz3Tw6lyuu35aoiZjoNxBWXhbCovtJdw/viewform?fbclid=IwY2xjawGNte5leHRuA2FlbQIxMAABHWfClD0O1sTYj03xsXMVQ8X1dmVzie0TS2i5MuV2lzGxAImpw8QNKNHTMQ_aem_1lTJqeuGvMVpllBHgGpfZA",
+                image: "https://scontent.flhr14-1.fna.fbcdn.net/v/t39.30808-6/464846197_861125512846927_7885170099175806461_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=75d36f&_nc_ohc=SlkX254PKJQQ7kNvgGsdYzX&_nc_zt=23&_nc_ht=scontent.flhr14-1.fna&_nc_gid=AcoPPz4ZKD0QBOsC9RAun75&oh=00_AYAd1EbMY1TBZ7Pw5t1RzfmyYFXr1i2XepBMgjTXKQmLbA&oe=6726AA65" // Image for the popup
+            }
+        ];
+
+        // Function to display events on the map
+        function displayEvents(eventArray) {
+            // Clear existing markers
+            map.eachLayer(layer => {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
+
+            // Loop through events and add markers
+            eventArray.forEach(event => {
+                const icon = event.title === "Rio 18" ? rioIcon : 
+                             event.title === "Soap" ? soapIcon : pantDuIcon; // Choose the appropriate icon for Pant Du
+                const marker = L.marker([event.lat, event.lon], { icon }).addTo(map);
+                marker.bindPopup(
+                    `<strong>${event.title}</strong><br>` +
+                    `<img src='${event.image}' class='popup-image' alt='Event Image'><br>` + 
+                    `📍 ${event.location}<br>` +
+                    `📅 ${event.date}<br>` +
+                    `🕓 ${event.time}<br>` +
+                    `🎟️ ${event.cost}<br>` +
+                    `🖇️ <a href='${event.link}' target='_blank'>linc</a>` // Changed display name for the link
+                );
+            });
+        }
+
+        // Function to filter events for this week
+        function filterEvents() {
+            const thisWeeksEvents = events.filter(event => event.date.includes("08.11.24"));
+            displayEvents(thisWeeksEvents);
+            // Change the appearance of the button to indicate selection
+            document.getElementById("showEventsButton").classList.add("selected");
+        }
+
+        // Function to clear filters and show all events
+        function clearFilters() {
+            displayEvents(events); // Display all events
+            document.getElementById("showEventsButton").classList.remove("selected"); // Reset button appearance
+        }
+
+        // Display all events on initial load
+        displayEvents(events);
+    </script>
+
+</body>
+</html>
